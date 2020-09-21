@@ -1,0 +1,5 @@
+.work
+.cdk.staging
+.parcel-cache
+node_modules
+cdk.out

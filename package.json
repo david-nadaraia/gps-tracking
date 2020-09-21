@@ -1,0 +1,33 @@
+{
+  "name": "gps-tracker",
+  "description": "Assets GPS Tracking Serverless Architecture",
+  "author": "David Nadaraia <david.nadaraia@gmail.com>",
+  "main": "index.js",
+  "version": "1.0.0",
+  "license": "ISC",
+  "scripts": {
+    "cdk": "cdk",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@aws-cdk/aws-apigateway": "1.62.0",
+    "@aws-cdk/aws-cognito": "1.62.0",
+    "@aws-cdk/aws-dynamodb": "1.62.0",
+    "@aws-cdk/aws-iam": "1.62.0",
+    "@aws-cdk/aws-iot": "1.62.0",
+    "@aws-cdk/aws-kinesis": "1.62.0",
+    "@aws-cdk/aws-kinesisfirehose": "1.62.0",
+    "@aws-cdk/aws-lambda": "1.62.0",
+    "@aws-cdk/aws-lambda-event-sources": "1.62.0",
+    "@aws-cdk/aws-s3": "1.62.0",
+    "@aws-cdk/core": "1.62.0",
+    "aws-cdk": "1.62.0",
+    "aws-mqtt": "^1.0.0",
+    "aws-sdk": "^2.756.0",
+    "ws": "^7.3.1"
+  },
+  "dependencies": {
+    "@turf/helpers": "^6.1.4",
+    "turf": "^3.0.14"
+  }
+}

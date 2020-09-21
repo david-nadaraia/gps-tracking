@@ -1,0 +1,6 @@
+{
+  "gps-tracking-dev": {
+    "RestApiEndpoint0551178A": "https://aazmwe8yjj.execute-api.us-east-1.amazonaws.com/prod/",
+    "IotIdentityPoolId": "us-east-1:75bda1e9-810b-49f0-b767-38d6ba77cc3d"
+  }
+}
