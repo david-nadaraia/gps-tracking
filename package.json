@@ -27,7 +27,6 @@
     "ws": "^7.3.1"
   },
   "dependencies": {
-    "@turf/helpers": "^6.1.4",
-    "turf": "^3.0.14"
+    "@turf/helpers": "^6.1.4"
   }
 }
