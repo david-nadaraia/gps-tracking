@@ -20,13 +20,13 @@
     "@aws-cdk/aws-lambda": "1.62.0",
     "@aws-cdk/aws-lambda-event-sources": "1.62.0",
     "@aws-cdk/aws-s3": "1.62.0",
+    "@aws-cdk/aws-s3-deployment": "^1.62.0",
     "@aws-cdk/core": "1.62.0",
     "aws-cdk": "1.62.0",
     "aws-mqtt": "^1.0.0",
     "aws-sdk": "^2.756.0",
+    "dotenv": "^8.2.0",
     "ws": "^7.3.1"
   },
-  "dependencies": {
-    "@turf/helpers": "^6.1.4"
-  }
+  "dependencies": {}
 }

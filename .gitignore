@@ -1,3 +1,5 @@
+.env
+*.env
 .work
 .cdk.staging
 .parcel-cache

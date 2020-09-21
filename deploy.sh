@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# write account ID and region into .env file
+echo "CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --output text --query Account)" > .env
+echo "CDK_DEFAULT_REGION=$(aws configure get region)" >> .env
+
+# run npm install if required
 if [ ! -d "node_modules" ]
 then
   npm install

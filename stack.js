@@ -1,6 +1,7 @@
 const cdk = require("@aws-cdk/core");
 const iam = require("@aws-cdk/aws-iam");
 const s3 = require("@aws-cdk/aws-s3");
+const s3d = require("@aws-cdk/aws-s3-deployment");
 const iot = require("@aws-cdk/aws-iot");
 const ddb = require("@aws-cdk/aws-dynamodb");
 const apig = require("@aws-cdk/aws-apigateway");
@@ -92,9 +93,9 @@ class GpsTrackingStack extends cdk.Stack {
       handler: this.getAllAssetsLambda,
       proxy: false,
       defaultCorsPreflightOptions: {
-        allowOrigins: ["*"],
-        allowMethods: ["GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS", "HEAD"],
-        allowHeaders: ["Content-Type", "Authorization", "X-Api-Key", "X-Amz-Date", "X-Requested-With"],
+        allowOrigins: apig.Cors.ALL_ORIGINS,
+        allowMethods: apig.Cors.ALL_METHODS,
+        allowHeaders: apig.Cors.DEFAULT_HEADERS,
       },
     });
 
@@ -177,6 +178,22 @@ class GpsTrackingStack extends cdk.Stack {
       actions: ["firehose:*"],
       resources: ["*"],
     }));
+
+    // #endregion
+
+    // #region Frontend
+
+    this.appBucket = new s3.Bucket(this, "WebAppBucket", {
+      publicReadAccess: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      websiteIndexDocument: "index.html",
+      websiteErrorDocument: "index.html",
+    });
+
+    // new s3d.BucketDeployment(this, "DeployWebApp", {
+    //   sources: [s3d.Source.asset(".src/frontend")],
+    //   destinationBucket: this.appBucket,
+    // });
 
     // #endregion
 

@@ -18,15 +18,14 @@ module.exports.getAll = async event => {
       return turf.point([longitude, latitude], item);
     }));
 
+  const featureCollection = turf.featureCollection(features);
+
   return {
     statusCode: 200,
-    body: JSON.stringify(
-      features.length && features ||
-      { message: "No assets are currently available." }
-    ),
     headers: {
       "content-type": "application/json",
-      "Access-Control-Allow-Origin": "*"
-    }
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify(featureCollection),
   };
 };

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>AT Inspector</title>
+  <title>GPS Tracking - Assets Inspector</title>
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
   <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.2.0/mapbox-gl.js"></script>
   <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.2.0/mapbox-gl.css" rel="stylesheet" />
@@ -37,17 +37,17 @@
     };
 
     const center = [-122.333275, 47.606119];
-    mapboxgl.accessToken = "$$MAPBOX$$";
+    mapboxgl.accessToken = "pk.eyJ1IjoiYWlsYW1hIiwiYSI6ImNrZjg1eDV1djA5MXAzMm84aXh2cDQwYTQifQ.N9AmqU5uKgi8xwfoDu2dXQ";
     const map = new mapboxgl.Map({
       container: "map",
-      style: "mapbox://styles/mbxsolutions/cjzsx4r1z0fa81cogf543w0io",
+      style: "mapbox://styles/mapbox/dark-v10",
       center: center,
       zoom: 11,
       transformRequest: transformRequest
     });
 
     map.on("style.load", () => {
-      // Add a dummy point to initialize the layer before recieving a live position
+      // Add a dummy point to initialize the layer before receiving a live position
       map.addSource("sample", {
         type: "geojson",
         data: {
@@ -108,7 +108,7 @@
 
       // Start querying for new asset data every 1 sec
       setInterval(() => {
-        fetch("$$$PULUMIURL$$$")
+        fetch("https://mgqxjbrrp9.execute-api.us-east-1.amazonaws.com/prod?cache=" + Math.random())
           .then(response => {
             return response.json();
           })
@@ -151,15 +151,15 @@
 
         const coordinates = f.geometry.coordinates.slice();
         const id = f.properties.id;
-        const elevation = f.properties.elevation.toFixed(2);
-        const timestamp = new Date(f.properties.ts * 1000);
-        const geofenceStatus = f.properties.geofenceStatus;
+        const foo = f.properties.foo.toFixed(2);
+        const bar = f.properties.bar.toFixed(4);
+        const timestamp = new Date(f.properties.timestamp);
         const text =
           `<h4> Asset Detail </h4> <ul>` +
           `<li>Asset ID: ${id} </li>` +
           `<li>Timestamp: ${timestamp} </li>` +
-          `<li>Elevation: ${elevation} meters </li>` +
-          `<li>Status: ${geofenceStatus} geofence </li> </ul>`;
+          `<li>Foo: ${foo} foos </li>` +
+          `<li>Bar: ${bar} bars </li> </ul>`;
         map.setFeatureState(
           {
             source: "sample",

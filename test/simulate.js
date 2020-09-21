@@ -41,7 +41,7 @@ function getRandomData() {
 async function simulateAsset(id, coordinates) {
   for (const point of coordinates) {
     await pushAssetPoint(id, point, getRandomData());
-    await sleep(Math.random() * 3000);
+    await sleep(Math.random() * 1000);
   }
 }
 
