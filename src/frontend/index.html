@@ -48,10 +48,8 @@
 
     function appendPath(data) {
       data.features.forEach(asset => {
-        if (asset.properties.reset) {
-          pathPoints.features = pathPoints.features.filter(x => x.properties.id !== asset.properties.id);
-          pathLines.features = pathLines.features.filter(x => x.properties.id !== asset.properties.id);
-        }
+        pathPoints.features = pathPoints.features.filter(x => x.properties.id !== asset.properties.id || x.properties.epoch === asset.properties.epoch);
+        pathLines.features = pathLines.features.filter(x => x.properties.id !== asset.properties.id || x.properties.epoch === asset.properties.epoch);
 
         pathPoints.features.push(asset);
 
@@ -81,7 +79,7 @@
       container: "map",
       style: "mapbox://styles/ailama/ckffe6ppg163119qp3osxvo3h",
       center: center,
-      zoom: 16,
+      zoom: 15,
       transformRequest: transformRequest
     });
 
@@ -131,7 +129,7 @@
             "red",
             "blue"
           ],
-          "circle-radius": 2,
+          "circle-radius": 3,
           "circle-stroke-color": "white",
           "circle-stroke-width": 1,
           "circle-opacity": 0.7,
@@ -191,7 +189,7 @@
 
       let selectedId = 0;
 
-      map.on("mousemove", (e) => {
+      function popupHandler(e) {
         const features = map.queryRenderedFeatures(e.point, {
           layers: ["currentPosition", "pathPoints"]
         });
@@ -238,7 +236,10 @@
           .setLngLat(coordinates)
           .setHTML(text)
           .addTo(map);
-      });
+      }
+
+      map.on("mousemove", popupHandler);
+      map.on("click", popupHandler);
     });
   </script>
 </body>

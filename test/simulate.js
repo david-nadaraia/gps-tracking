@@ -31,9 +31,9 @@ function sleep(ms) {
   });
 }
 
-function getRandomData(index) {
+function getRandomData(data) {
   return {
-    reset: index === 0,
+    ...data,
     foo: Math.random(),
     bar: Math.random() * 10,
     speed: Math.random() * 120,
@@ -44,10 +44,12 @@ async function simulateAsset(id, coordinates) {
   let n = 0;
 
   while (n++ > -Infinity) {
+    const e = Math.floor(n / coordinates.length);
     const i = n % coordinates.length;
     const point = coordinates[i];
-    await pushAssetPoint(id, point, getRandomData(i));
-    await sleep(Math.random() * 1000);
+
+    await pushAssetPoint(id, point, getRandomData({ epoch: e }));
+    await sleep(Math.random() * 2000);
   }
 }
 
