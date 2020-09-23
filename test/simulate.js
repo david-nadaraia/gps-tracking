@@ -31,16 +31,22 @@ function sleep(ms) {
   });
 }
 
-function getRandomData() {
+function getRandomData(index) {
   return {
+    reset: index === 0,
     foo: Math.random(),
-    bar: Math.random(),
+    bar: Math.random() * 10,
+    speed: Math.random() * 120,
   };
 }
 
 async function simulateAsset(id, coordinates) {
-  for (const point of coordinates) {
-    await pushAssetPoint(id, point, getRandomData());
+  let n = 0;
+
+  while (n++ > -Infinity) {
+    const i = n % coordinates.length;
+    const point = coordinates[i];
+    await pushAssetPoint(id, point, getRandomData(i));
     await sleep(Math.random() * 1000);
   }
 }

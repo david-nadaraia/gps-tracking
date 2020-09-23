@@ -31,10 +31,10 @@ module.exports.handler = async (event, context, callback) => {
       Item: x
     }).promise();
 
-    await fh.putRecord({
-      DeliveryStreamName: process.env.DELIVERY_STREAM,
-      Record: { Data: new Buffer.from(JSON.stringify(x)) },
-    }).promise();
+    // await fh.putRecord({
+    //   DeliveryStreamName: process.env.DELIVERY_STREAM,
+    //   Record: { Data: new Buffer.from(JSON.stringify(x)) },
+    // }).promise();
 
     // TODO: publish data to IoT MQTT channel for frontend real-time update
   }

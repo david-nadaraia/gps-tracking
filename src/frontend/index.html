@@ -36,45 +36,116 @@
       };
     };
 
-    const center = [-122.333275, 47.606119];
+    const pathPoints = {
+      type: "FeatureCollection",
+      features: [],
+    };
+
+    const pathLines = {
+      type: "FeatureCollection",
+      features: [],
+    };
+
+    function appendPath(data) {
+      data.features.forEach(asset => {
+        if (asset.properties.reset) {
+          pathPoints.features = pathPoints.features.filter(x => x.properties.id !== asset.properties.id);
+          pathLines.features = pathLines.features.filter(x => x.properties.id !== asset.properties.id);
+        }
+
+        pathPoints.features.push(asset);
+
+        let line = pathLines.features.find(x => x.properties.id === asset.properties.id);
+
+        if (!line) {
+          line = {
+            type: "Feature",
+            properties: asset.properties,
+            geometry: { type: "LineString", coordinates: [] },
+          };
+
+          pathLines.features.push(line);
+        }
+
+        line.geometry.coordinates.push(asset.geometry.coordinates);
+      });
+
+      map.getSource("pathPoints").setData(pathPoints);
+      map.getSource("pathLines").setData(pathLines);
+    }
+
+    const center = [139.75363, 35.69402];
     mapboxgl.accessToken = "pk.eyJ1IjoiYWlsYW1hIiwiYSI6ImNrZjg1eDV1djA5MXAzMm84aXh2cDQwYTQifQ.N9AmqU5uKgi8xwfoDu2dXQ";
+
     const map = new mapboxgl.Map({
       container: "map",
-      style: "mapbox://styles/mapbox/dark-v10",
+      style: "mapbox://styles/ailama/ckffe6ppg163119qp3osxvo3h",
       center: center,
-      zoom: 11,
+      zoom: 16,
       transformRequest: transformRequest
     });
 
     map.on("style.load", () => {
-      // Add a dummy point to initialize the layer before receiving a live position
-      map.addSource("sample", {
+      map.addSource("pathLines", {
         type: "geojson",
         data: {
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: center
-          },
-          properties: {
-            id: 0,
-            elevation: 0,
-            ts: 0
-          }
-        },
-        generateId: true
+          type: "FeatureCollection",
+          features: [],
+        }
       });
 
-      //Add circle point layer from the live asset tracking pipeline
+      map.addSource("pathPoints", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [],
+        }
+      });
+
+      map.addSource("currentPosition", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [],
+        }
+      });
+
       map.addLayer({
-        id: "sample",
-        type: "circle",
-        source: "sample",
+        id: "pathLines",
+        type: "line",
+        source: "pathLines",
         paint: {
-          // Change circle color based on a new "status" metadata value for geofencing in/out indicator
+          "line-width": 2,
+          "line-color": "white",
+        }
+      });
+
+      map.addLayer({
+        id: "pathPoints",
+        type: "circle",
+        source: "pathPoints",
+        paint: {
           "circle-color": [
             "case",
-            ["==", ["get", "geofenceStatus"], "INSIDE"],
+            [">", ["get", "speed"], 90],
+            "red",
+            "blue"
+          ],
+          "circle-radius": 2,
+          "circle-stroke-color": "white",
+          "circle-stroke-width": 1,
+          "circle-opacity": 0.7,
+        }
+      });
+
+      map.addLayer({
+        id: "currentPosition",
+        type: "circle",
+        source: "currentPosition",
+        paint: {
+          "circle-color": [
+            "case",
+            [">", ["get", "speed"], 90],
             "red",
             "blue"
           ],
@@ -87,13 +158,7 @@
             16,
             10
           ],
-          // Change circle stroke color on hover/highlight with mouse
-          "circle-stroke-color": [
-            "case",
-            ["==", ["feature-state", "hover"], true],
-            "black",
-            "white"
-          ],
+          "circle-stroke-color": "white",
           "circle-stroke-width": [
             "interpolate",
             ["exponential", 1.2],
@@ -108,18 +173,13 @@
 
       // Start querying for new asset data every 1 sec
       setInterval(() => {
-        fetch("https://mgqxjbrrp9.execute-api.us-east-1.amazonaws.com/prod?cache=" + Math.random())
+        fetch("https://xm13db4h64.execute-api.us-east-1.amazonaws.com/prod?cache=" + Math.random())
           .then(response => {
             return response.json();
           })
           .then(data => {
-            const keys = Object.keys(data);
-            if (!keys.includes("message")) {
-              //Set it on the map
-              map.getSource("sample").setData(data);
-            } else {
-              console.log(data);
-            }
+            appendPath(data);
+            map.getSource("currentPosition").setData(data);
           });
       }, 1000);
 
@@ -133,13 +193,13 @@
 
       map.on("mousemove", (e) => {
         const features = map.queryRenderedFeatures(e.point, {
-          layers: ["sample"]
+          layers: ["currentPosition", "pathPoints"]
         });
 
         if (!features.length) {
           map.getCanvas().style.cursor = "";
           map.removeFeatureState({
-            source: "sample",
+            source: "currentPosition",
             id: selectedId
           });
           popup.remove();
@@ -153,22 +213,27 @@
         const id = f.properties.id;
         const foo = f.properties.foo.toFixed(2);
         const bar = f.properties.bar.toFixed(4);
-        const timestamp = new Date(f.properties.timestamp);
+        const speed = f.properties.speed.toFixed(0);
+        const timestamp = new Date(f.properties.timestamp).toISOString();
         const text =
-          `<h4> Asset Detail </h4> <ul>` +
-          `<li>Asset ID: ${id} </li>` +
-          `<li>Timestamp: ${timestamp} </li>` +
-          `<li>Foo: ${foo} foos </li>` +
-          `<li>Bar: ${bar} bars </li> </ul>`;
+          `<img src="assets/car.jpg" style="width: 100%;" />` +
+          `<h4>Asset Detail </h4> <ul>` +
+          `<li><b>Asset ID</b>: ${id} </li>` +
+          `<li><b>Timestamp:</b> ${timestamp} </li>` +
+          `<li><b>Speed</b>: ${speed} km/h </li>` +
+          `<li><b>Foo</b>: ${foo} foos </li>` +
+          `<li><b>Bar</b>: ${bar} bars </li> </ul>`;
+
         map.setFeatureState(
           {
-            source: "sample",
+            source: "currentPosition",
             id: selectedId
           },
           {
             hover: true
           }
         );
+
         popup
           .setLngLat(coordinates)
           .setHTML(text)
